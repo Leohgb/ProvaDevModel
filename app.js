@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const { sequelize } = require('sequelize');
 const handlebars = require('express-handlebars').engine
 const bodyParser = require('body-parser')
 const post = require("./models/user")
@@ -22,7 +21,7 @@ app.post("/cadastrar", async (req, res) => {
             nome: req.body.nome,
             endereco: req.body.endereco,
             bairro: req.body.bairro,
-            cep: req.body.cep,
+            cep: Number(req.body.cep),
             cidade: req.body.cidade,
             estado: req.body.estado,
         }).then(() => {
@@ -43,7 +42,7 @@ app.get("/consulta", (req, res) => {
 })
 
 app.get("/editar/:id", (req, res) => {
-    post.findAll({ sequelize: { "id": req.params.id } }).then((posts) => {
+    post.findAll({ where: { "id": req.params.id } }).then((posts) => {
         res.render("editar", { posts: posts })
     }).catch(function (erro) {
         console.log("Erro ao editar os dados: " + erro)
@@ -58,7 +57,7 @@ app.post("/atualizar", async (req, res) => {
         cep: req.body.cep,
         cidade: req.body.cidade,
         estado: req.body.estado,
-    }, { sequelize: { id: req.body.id } }).then(() => {
+    }, { where: { id: req.body.id } }).then(() => {
         res.redirect("/consulta")
     }).catch(function (erro) {
         res.send("Erro ao atualizar: " + erro)
